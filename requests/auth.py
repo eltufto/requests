@@ -242,7 +242,7 @@ class HTTPDigestAuth(AuthBase):
             r.content
             r.raw.release_conn()
 
-            r.request.headers['Authorization'] = self.build_digest_header(r.request.method, r.request.url)
+            r.request.headers['Authorization'] = self.build_digest_header(r.request.method, r.request.full_url)
             r.request.send(anyway=True)
             _r = r.request.response
             _r.history.append(r)
@@ -254,7 +254,7 @@ class HTTPDigestAuth(AuthBase):
     def __call__(self, r):
         # If we have a saved nonce, skip the 401
         if self.last_nonce:
-            r.headers['Authorization'] = self.build_digest_header(r.method, r.url)
+            r.headers['Authorization'] = self.build_digest_header(r.method, r.full_url)
         r.register_hook('response', self.handle_401)
         return r
 
